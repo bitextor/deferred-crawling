@@ -1,0 +1,3 @@
+[submodule "warc2text"]
+	path = warc2text
+	url = https://github.com/bitextor/warc2text

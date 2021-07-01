@@ -16,6 +16,8 @@ The reconstructor script is written in Python and it has some dependencies. Inst
 pip install -r requirements.txt
 ```
 
+Also, it depends on Bitextor tool `warc2text`. Follow the README.md instructions inside the folder "warc2text" to properly download, install and compile.
+
 ## Usage
 
 This is an example to reconstruct a Bitextor standoff annotated output obtained from an English-Greek domain:
@@ -36,6 +38,7 @@ And, in case you already have a WARC file with the crawl data, you can replace `
 python3 deferred-annotation-reconstructor.py path-to-bitextor-output/en-el.deduped.txt.gz en el path-to-data/warc/primeminister.warc.gz | python3 path-to-bifixer/bifixer/bifixer.py --sdeferredcol 6 --tdeferredcol 7 --ignore_duplicates - - en el > outputdeferred
 ```
 
+For more options, check `--help` command.
 
 ![Connecting Europe Facility](https://raw.githubusercontent.com/bitextor/bitextor/master/img/logo_en_cef273x39_nonalpha.png)
 
