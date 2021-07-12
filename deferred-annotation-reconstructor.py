@@ -76,7 +76,7 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
                             for segment in segments:
                                 segment = segment.rstrip('\n')
                                 # Then calculate the MurmurHash for each sentence from the downloaded document like Bitextor does, and then store it in the cache
-                                l[url][subprocess.run(["preprocess/bin/mmhsum"], stdout=subprocess.PIPE, input=segment, encoding='utf8').stdout.rstrip('\n')]=segment
+                                l[url][subprocess.run(["mmhsum"], stdout=subprocess.PIPE, input=segment, encoding='utf8').stdout.rstrip('\n')]=segment
     
             # Print the reconstructed sentences
             list_sentences = []
