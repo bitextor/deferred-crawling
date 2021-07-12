@@ -16,7 +16,7 @@ The reconstructor script is written in Python and it has some dependencies. Inst
 pip install -r requirements.txt
 ```
 
-Also, it depends on Bitextor tool `warc2text`. Follow the README.md instructions inside the folder "warc2text" to properly download, install and compile.
+Also, it depends on Bitextor tool `warc2text`. Follow the README.md instructions inside the folder "warc2text" to properly download, compile and install in your path (remember to update the variable $PATH if necessary).
 
 ## Usage
 

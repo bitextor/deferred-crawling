@@ -62,7 +62,7 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
 
                 with tempfile.TemporaryDirectory() as tempprocess:
                     # Process the downloaded document the same way Bitextor does in Paracrawl (warc2text + Moses sentence splitter Python port)
-                    subprocess.run(["warc2text/bin/warc2text", "-o", tempprocess, fp.name], stderr=subprocess.DEVNULL)
+                    subprocess.run(["warc2text", "-o", tempprocess, fp.name], stderr=subprocess.DEVNULL)
                     fp.close()
                     splitter = None
                     try:
