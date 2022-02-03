@@ -15,6 +15,7 @@ from warcio.archiveiterator import ArchiveIterator
 from warcio.warcwriter import WARCWriter
 
 l = LRU(100000) # A cache with size of 100K documents in memory
+header = "--header" in sys.argv
 
 parser = argparse.ArgumentParser(prog=os.path.basename(sys.argv[0]), formatter_class=argparse.ArgumentDefaultsHelpFormatter, description="Reconstructs sentences from deferred crawling standoff annotations from Bitextor", epilog="Report bugs to: https://github.com/bitextor/deferred-crawling/issues")
 
@@ -31,22 +32,37 @@ groupO = parser.add_argument_group('optional positional arguments')
 groupO.add_argument("warcfile", nargs='?', type=str, help="WARC file used to retrieve documents. If a document is not found, then wget will try to download it")
 # Optional parameter
 parser.add_argument("--limit_sentences", type=int, help="Limit number of fully reconstructed sentence pairs")
-parser.add_argument("--src_url_idx", type=int, default=0, help="Source URL index")
-parser.add_argument("--trg_url_idx", type=int, default=1, help="Target URL index")
-parser.add_argument("--src_deferred_idx", type=int, default=5, help="Source sentence deferred index")
-parser.add_argument("--trg_deferred_idx", type=int, default=6, help="Target sentence deferred index")
+# Optional indexes and header
+parser.add_argument("--header", action='store_true', help="If set, the input file will be expected to contain a header")
+parser.add_argument("--src_url_idx", type=int if not header else str, default=0 if not header else "src_url", help="Source URL index")
+parser.add_argument("--trg_url_idx", type=int if not header else str, default=1 if not header else "trg_url", help="Target URL index")
+parser.add_argument("--src_deferred_idx", type=int if not header else str, default="src_deferred_hash", help="Source sentence deferred index")
+parser.add_argument("--trg_deferred_idx", type=int if not header else str, default="trg_deferred_hash", help="Target sentence deferred index")
 
 args = parser.parse_args()
 
 with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
+    src_deferred_idx = args.src_deferred_idx
+    trg_deferred_idx = args.trg_deferred_idx
+    src_url_idx = args.src_url_idx
+    trg_url_idx = args.trg_url_idx
+
+    if args.header:
+        header = next(bitextor_output).strip().split('\t')
+
+        src_deferred_idx = header.index(src_deferred_idx)
+        trg_deferred_idx = header.index(trg_deferred_idx)
+        src_url_idx = header.index(src_url_idx)
+        trg_url_idx = header.index(trg_url_idx)
+
     reconst_count = 0  # Let's count how many sentences have been fully reconstructed (both source and target are not empty)
     for line in bitextor_output:
         # Parse bitextor ".sent.gz" line with deferred crawling annotations
         parts_line = line.rstrip('\n').split('\t')
-        deferredhash1 = parts_line[args.src_deferred_idx]
-        deferredhash2 = parts_line[args.trg_deferred_idx]
-        url1 = parts_line[args.src_url_idx]
-        url2 = parts_line[args.trg_url_idx]
+        deferredhash1 = parts_line[src_deferred_idx]
+        deferredhash2 = parts_line[trg_deferred_idx]
+        url1 = parts_line[src_url_idx]
+        url2 = parts_line[trg_url_idx]
         reconst_parts_line = []  # Store the content of the reconstructed line in another list for a post processing checks and counts
         reconst_parts_line += [url1,url2]
         
