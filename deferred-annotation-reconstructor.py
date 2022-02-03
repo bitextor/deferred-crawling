@@ -31,6 +31,10 @@ groupO = parser.add_argument_group('optional positional arguments')
 groupO.add_argument("warcfile", nargs='?', type=str, help="WARC file used to retrieve documents. If a document is not found, then wget will try to download it")
 # Optional parameter
 parser.add_argument("--limit_sentences", type=int, help="Limit number of fully reconstructed sentence pairs")
+parser.add_argument("--src_url_idx", type=int, default=0, help="Source URL index")
+parser.add_argument("--trg_url_idx", type=int, default=1, help="Target URL index")
+parser.add_argument("--src_deferred_idx", type=int, default=5, help="Source sentence deferred index")
+parser.add_argument("--trg_deferred_idx", type=int, default=6, help="Target sentence deferred index")
 
 args = parser.parse_args()
 
@@ -39,10 +43,10 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
     for line in bitextor_output:
         # Parse bitextor ".sent.gz" line with deferred crawling annotations
         parts_line = line.rstrip('\n').split('\t')
-        deferredhash1 = parts_line[5]
-        deferredhash2 = parts_line[6]
-        url1 = parts_line[0]
-        url2 = parts_line[1]
+        deferredhash1 = parts_line[args.src_deferred_idx]
+        deferredhash2 = parts_line[args.trg_deferred_idx]
+        url1 = parts_line[args.src_url_idx]
+        url2 = parts_line[args.trg_url_idx]
         reconst_parts_line = []  # Store the content of the reconstructed line in another list for a post processing checks and counts
         reconst_parts_line += [url1,url2]
         
