@@ -33,7 +33,7 @@ groupO.add_argument("warcfile", nargs='?', type=str, help="WARC file used to ret
 # Optional parameter
 parser.add_argument("--limit_sentences", type=int, help="Limit number of fully reconstructed sentence pairs")
 # Optional indexes and header
-parser.add_argument("--header", action='store_true', help="If set, the input file will be expected to contain a header")
+parser.add_argument("--header", action='store_true', help="If set, the input file will be expected to contain a header and it will be printed")
 parser.add_argument("--src_url_idx", type=int if not header else str, default=0 if not header else "src_url", help="Source URL index")
 parser.add_argument("--trg_url_idx", type=int if not header else str, default=1 if not header else "trg_url", help="Target URL index")
 parser.add_argument("--src_deferred_idx", type=int if not header else str, default=5 if not header else "src_deferred_hash", help="Source sentence deferred index")
@@ -54,6 +54,8 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
         trg_deferred_idx = header.index(trg_deferred_idx)
         src_url_idx = header.index(src_url_idx)
         trg_url_idx = header.index(trg_url_idx)
+
+        print('\t'.join(header))
 
     reconst_count = 0  # Let's count how many sentences have been fully reconstructed (both source and target are not empty)
     for line in bitextor_output:
