@@ -36,8 +36,8 @@ parser.add_argument("--limit_sentences", type=int, help="Limit number of fully r
 parser.add_argument("--header", action='store_true', help="If set, the input file will be expected to contain a header")
 parser.add_argument("--src_url_idx", type=int if not header else str, default=0 if not header else "src_url", help="Source URL index")
 parser.add_argument("--trg_url_idx", type=int if not header else str, default=1 if not header else "trg_url", help="Target URL index")
-parser.add_argument("--src_deferred_idx", type=int if not header else str, default="src_deferred_hash", help="Source sentence deferred index")
-parser.add_argument("--trg_deferred_idx", type=int if not header else str, default="trg_deferred_hash", help="Target sentence deferred index")
+parser.add_argument("--src_deferred_idx", type=int if not header else str, default=5 if not header else "src_deferred_hash", help="Source sentence deferred index")
+parser.add_argument("--trg_deferred_idx", type=int if not header else str, default=6 if not header else "trg_deferred_hash", help="Target sentence deferred index")
 
 args = parser.parse_args()
 
