@@ -40,6 +40,6 @@ python3 deferred-annotation-reconstructor.py path-to-bitextor-output/en-el.dedup
 
 For more options, check `--help` command.
 
-![Connecting Europe Facility](https://raw.githubusercontent.com/bitextor/bitextor/master/img/logo_en_cef273x39_nonalpha.png)
+![Connecting Europe Facility](https://raw.githubusercontent.com/bitextor/bitextor/master/docs/img/logo_en_cef273x39_nonalpha.png)
 
 All documents and software contained in this repository reflect only the authors' view. The Innovation and Networks Executive Agency of the European Union is not responsible for any use that may be made of the information it contains.
