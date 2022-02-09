@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 import argparse
-from lru import LRU
 import gzip
 import sys
 import os
-import warcio
 import tempfile
 import base64
 import subprocess
+
+from lru import LRU
 from sentence_splitter import SentenceSplitter, SentenceSplitterException
+from loomchild.segmenter import LoomchildSegmenter
 import glob
 from warcio.archiveiterator import ArchiveIterator
 from warcio.warcwriter import WARCWriter
@@ -31,6 +32,7 @@ parser.add_argument("trglang", type=str, help="Target language (TL) of the input
 groupO = parser.add_argument_group('optional positional arguments')
 groupO.add_argument("warcfile", nargs='?', type=str, help="WARC file used to retrieve documents. If a document is not found, then wget will try to download it")
 # Optional parameter
+parser.add_argument("--sentence_splitter", choices=["loomchild", "moses"], default="loomchild", help="Sentence splitter")
 parser.add_argument("--limit_sentences", type=int, help="Limit number of fully reconstructed sentence pairs")
 # Optional indexes and header
 parser.add_argument("--header", action='store_true', help="If set, the input file will be expected to contain a header and it will be printed")
@@ -87,14 +89,20 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
                     subprocess.run(["warc2text", "-o", tempprocess, fp.name], stderr=subprocess.DEVNULL)
                     fp.close()
                     splitter = None
-                    try:
-                        splitter = SentenceSplitter(language=langcode)
-                    except SentenceSplitterException as e:
-                        sys.stderr.write(str(e)+"\n")
-                        splitter = SentenceSplitter(language='en')
+                    if args.sentence_splitter == "moses":
+                        try:
+                            splitter = SentenceSplitter(language=langcode).split
+                        except SentenceSplitterException as e:
+                            sys.stderr.write(str(e)+"\n")
+                            splitter = SentenceSplitter(language='en').split
+                    elif args.sentence_splitter == "loomchild":
+                        splitter = LoomchildSegmenter(langcode).get_document_segmentation
+                    else:
+                        sys.stderr.write(f"Unknown splitter: {args.sentence_splitter}\n")
+
                     for filename in glob.glob(tempprocess + "/*/text.gz"):
                         with gzip.open(filename, 'r') as f:
-                            segments = splitter.split(base64.b64decode(f.read()).decode('utf8'))
+                            segments = splitter(base64.b64decode(f.read()).decode('utf8'))
                             for segment in segments:
                                 segment = segment.rstrip('\n')
                                 # Then calculate the MurmurHash for each sentence from the downloaded document like Bitextor does, and then store it in the cache
