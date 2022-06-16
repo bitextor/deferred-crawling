@@ -103,8 +103,9 @@ with gzip.open(args.bitextor_output, 'rt') as bitextor_output:
                     for filename in glob.glob(tempprocess + "/*/text.gz"):
                         with gzip.open(filename, 'r') as f:
                             segments = splitter(base64.b64decode(f.read()).decode('utf8'))
+                            segments = [s.strip() for s in segments if s.strip() != '']
+
                             for segment in segments:
-                                segment = segment.rstrip('\n')
                                 # Then calculate the MurmurHash for each sentence from the downloaded document like Bitextor does, and then store it in the cache
                                 l[url][subprocess.run(["mmhsum"], stdout=subprocess.PIPE, input=segment, encoding='utf8').stdout.rstrip('\n')]=segment
     
